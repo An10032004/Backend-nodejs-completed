@@ -169,12 +169,18 @@ module.exports.edit= async (req, res) => {
         deleted: false,
         _id: req.params.id
     }
+    const category = await ProductCategory.find({
+        deleted: false,
+    })
+
+    const newCategory = createTreeHelper.tree(category);
 
     const product = await Product.findOne(find)
 
     res.render("admin/pages/products/edit", {
         pageTitle: "Sua San pham",
-        product: product
+        product: product,
+        category:newCategory
     })  
     } catch (error) {
         req.flash("error",`San pham khong hop le`)
