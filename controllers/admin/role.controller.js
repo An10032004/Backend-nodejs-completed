@@ -64,3 +64,29 @@ module.exports.editPatch= async (req, res) => {
     res.redirect("back")
 
 }
+
+module.exports.permissions= async (req, res) => { 
+    let find = {
+        deleted:false,
+    }
+
+    const records = await Role.find(find)
+
+    res.render("admin/pages/roles/permissions", {
+        pageTitle: "Phan Quyen",
+        records:records
+    })
+
+}
+
+module.exports.permissionsPatch= async (req, res) => { 
+    const permissions = JSON.parse(req.body.permissions)
+
+    for (const item of permissions) {
+        await Role.updateOne({_id: item.id},{permissions:item.permissions})
+    }
+    req.flash("success","cap nhat thanh cong")
+
+    res.redirect("back")
+}
+

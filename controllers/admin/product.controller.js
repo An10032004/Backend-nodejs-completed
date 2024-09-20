@@ -232,3 +232,4 @@ module.exports.detail= async (req, res) => {
     }
    
 }
+

@@ -103,3 +103,29 @@ module.exports.editPatch= async (req, res) => {
     res.redirect("back")
 }
 
+module.exports.detail= async (req, res) => { 
+   const id = req.params.id
+
+   const find = {
+    deleted:false,
+    _id:id,
+   }
+   const newRecords = await ProductCategory.findOne(find)
+
+   res.render("admin/pages/product-category/detail", {
+    pageTitle: "Chi tiet Danh Muc San pham",
+    records : newRecords
+}) 
+}
+
+module.exports.deleteItem= async (req, res) => { 
+    const id = req.params.id
+
+    await ProductCategory.updateOne({_id:id},{
+        deleted:true,
+        deletedAt:new Date()})
+
+        req.flash('success', `delete products success`); 
+        res.redirect("back")
+}
+
