@@ -4,6 +4,7 @@ const systemConfig = require("../../config/system.js")
 const productRoutes = require("./product.route.js")
 const productCategoryRoutes = require("./product-category.route.js")
 const roleRoutes = require("./role.route.js")
+const accountRoutes = require("./account.route.js")
 module.exports = (app) => {
     const PATH_ADMIN = systemConfig.prefixAdmin
     app.use(PATH_ADMIN + '/dashboard', dashboardRoutes)
@@ -13,5 +14,7 @@ module.exports = (app) => {
     app.use(PATH_ADMIN + '/product-category', productCategoryRoutes)
 
     app.use(PATH_ADMIN + '/roles', roleRoutes)
+
+    app.use(PATH_ADMIN + '/account', accountRoutes)
  
 } 
