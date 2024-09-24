@@ -6,6 +6,7 @@ const flash = require('express-flash')
 const cookieParser = require('cookie-parser')
 const session = require('express-session')
 const mongoose = require("mongoose");
+const moment = require("moment");
 
 require("dotenv").config();
 
@@ -37,8 +38,11 @@ app.use(flash());
 
 //tinyMCE
 app.use('/tinymce', express.static(path.join(__dirname, 'node_modules', 'tinymce')));
-
+//locals
 app.locals.prefixAdmin = systemConfig.prefixAdmin;
+app.locals.moment = moment
+
+
 
 route(app)
 routeAdmin(app)

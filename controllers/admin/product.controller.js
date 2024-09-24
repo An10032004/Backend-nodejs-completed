@@ -1,4 +1,5 @@
 const Product = require("../../models/product.model")
+const Account = require("../../models/account.model")
 const filterStatusHelper = require("../../helpers/filterStatus")
 const searchHelper = require("../../helpers/search")
 const paginationHelper = require("../../helpers/pagination")
@@ -53,7 +54,18 @@ if(req.query.sortKey && req.query.sortValue){
         .sort(sort)
         .limit(objectPagination.limitItems)
         .skip(objectPagination.skip)
-   
+    
+    for (const product of products) {
+        const user = await Account.findOne({
+            _id: product.createdBy.account_id
+        })
+        if(user){
+            product.accountFullname = user.fullName
+        }
+    }
+
+    
+
     res.render("admin/pages/products/index", {
         pageTitle: "Danh Sach San pham",
         products: products,
@@ -92,8 +104,11 @@ module.exports.changeMulti = async (req, res) => {
             await Product.updateMany(
                 { _id:  { $in: ids} },
                 {
-                deleted : true,
-                deletedAt:new Date()
+                    deleted:true,
+                    deletedBy:{
+                        account_id: res.locals.user.id,
+                        deletedAt: new Date(),
+                    },
                 } )    
                 req.flash('success', `delete  ${ids.length} products success`);    
             break;
@@ -116,13 +131,18 @@ module.exports.deleteItem = async (req, res) => {
     const id = req.params.id
      await Product.updateOne({_id: id}, {
         deleted: true,
-        deletedAt:new Date()
+        // deletedAt:new Date()
+        deletedBy:{
+            account_id: res.locals.user.id,
+            deletedAt: new Date(),
+        },
      }) 
     req.flash('success', `delete products success`); 
     res.redirect("back")
 }
 //[GET] /admin/products/create
 module.exports.create= async (req, res) => { 
+    
     let find = {
         deleted :false,
 
@@ -155,7 +175,9 @@ module.exports.createPost= async (req, res) => {
     // if(req.file){
     // req.body.thumbnail = `/uploads/${req.file.filename}`
     // }
-
+    req.body.createdBy = {
+        account_id: res.locals.user.id
+    }
     const product = new Product(req.body)
     await product.save()
 
