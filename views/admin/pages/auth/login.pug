@@ -11,6 +11,7 @@ block main
         form(
           action=`${prefixAdmin}/auth/login`
           method="POST"
+
         )
           div(class="form-group")
             label(for="email") Email
@@ -19,7 +20,7 @@ block main
               class="form-control"
               id="email"
               name="email"
-              required
+              
             )
           div(class="form-group")
             label(for="password") Mật khẩu
@@ -28,7 +29,7 @@ block main
               class="form-control"
               id="password"
               name="password"
-              required
+              
             )
           div(class="form-group")
             button(
