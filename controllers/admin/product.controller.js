@@ -62,6 +62,16 @@ if(req.query.sortKey && req.query.sortValue){
         if(user){
             product.accountFullname = user.fullName
         }
+
+        const updateBy = product.updatedBy.slice(-1)[0]
+        if(updateBy){
+            const userUpdated = await Account.findOne({
+                _id: updateBy.account_id
+            })
+
+            updateBy.accountFullname = userUpdated.fullName
+        }
+        
     }
 
     
@@ -79,7 +89,12 @@ if(req.query.sortKey && req.query.sortValue){
 module.exports.changeStatus = async (req, res) => {
     const status = req.params.status
     const id = req.params.id
-     await Product.updateOne({_id: id},{status: status})
+
+    const updatedBy = {
+        account_id: res.locals.user.id,
+        updatedAt: new Date(),
+    }
+     await Product.updateOne({_id: id},{status: status ,$push : { updatedBy: updatedBy}})
 
      req.flash('success', 'Update success');
 
@@ -91,13 +106,20 @@ module.exports.changeMulti = async (req, res) => {
    const type = req.body.type
    const ids = req.body.ids.split(", ")
 
+
+   const updatedBy = {
+    account_id: res.locals.user.id,
+    updatedAt: new Date(),
+}
+
+
     switch (type) {
         case "active":
-            await Product.updateMany({ _id:  { $in: ids} },{ status : "active" } )
+            await Product.updateMany({ _id:  { $in: ids} },{ status : "active" ,$push : { updatedBy: updatedBy},} )
             req.flash('success', `Update status ${ids.length} products success`);
             break;
         case "inactive":
-            await Product.updateMany({ _id:  { $in: ids} },{ status : "inactive" } )    
+            await Product.updateMany({ _id:  { $in: ids} },{ status : "inactive" ,$push : { updatedBy: updatedBy},} )    
             req.flash('success', `Update status ${ids.length} products success`);    
             break;
         case "delete-all":
@@ -116,7 +138,7 @@ module.exports.changeMulti = async (req, res) => {
             for (const item of ids) {
                 let [id,position] = item.split("-")
                 position = parseInt(position)
-                await Product.updateOne({_id: id},{position:position})
+                await Product.updateOne({_id: id},{position:position ,$push : { updatedBy: updatedBy},})
             }
             req.flash('success', `Change ${ids.length} products Position success`); 
             break;
@@ -225,7 +247,16 @@ module.exports.editPatch = async (req,res) => {
     }
 
     try {
-        await Product.updateOne({_id: id},req.body)
+    
+        const updatedBy = {
+            account_id: res.locals.user.id,
+            updatedAt: new Date(),
+        }
+    
+        await Product.updateOne({_id: id},{
+            ...req.body,
+            $push : { updatedBy: updatedBy},
+        })
         req.flash("success",`Cap nhat thanh cong`)
     } catch (error) {
         req.flash("error",`cap nhat khong thanh cong`)

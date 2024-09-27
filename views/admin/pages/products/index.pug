@@ -60,6 +60,7 @@ block main
                                 th Vi tri
                                 th Trạng thái
                                 th Người tạo
+                                th Nguoi cap nhat
                                 th Hành động
                         tbody 
                             each item, index in products  
@@ -113,6 +114,11 @@ block main
                                     td 
                                         p #{item.accountFullname}
                                         +formatDatetime(item.createdBy.createdAt)
+                                    td 
+                                        - var updatedBy = item.updatedBy.slice(-1)[0]
+                                        if(updatedBy)
+                                            p #{updatedBy.accountFullname}
+                                            +formatDatetime(updatedBy.updatedAt)
                                     td  
                                         a(
                                             href=`${prefixAdmin}/products/detail/${item.id}`,
