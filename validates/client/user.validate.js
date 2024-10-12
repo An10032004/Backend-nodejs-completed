@@ -27,3 +27,25 @@ module.exports.forgotPassword = (req,res,next) => {
 
     next()
 }
+
+module.exports.resetPasswordPost = (req,res,next) => {
+    if(!req.body.password){
+        req.flash("error",`Vui long nhap mat khau`)
+        res.redirect("back")
+        return
+    }   
+
+    if(!req.body.confirmPassword){
+        req.flash("error",`Vui long nhap mat khau moi`)
+        res.redirect("back")
+        return
+    }
+
+    if( req.body.password!= req.body.confirmPassword){
+        req.flash("error",`Mat khau khong khớp`)
+        res.redirect("back")
+        return
+    }
+
+    next()
+}
