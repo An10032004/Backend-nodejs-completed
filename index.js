@@ -7,7 +7,9 @@ const cookieParser = require('cookie-parser')
 const session = require('express-session')
 const mongoose = require("mongoose");
 const moment = require("moment");
+const http = require('http')
 
+const { Server } = require("socket.io");
 require("dotenv").config();
 
 
@@ -20,6 +22,10 @@ database.connect();
 
 const app = express();
 const port = process.env.PORT;
+
+const server = http.createServer(app);
+const io = new Server(server);
+global._io = io
 
 app.set('views', `${__dirname}/views`)
 app.set('view engine', 'pug')
@@ -47,6 +53,12 @@ app.locals.moment = moment
 route(app)
 routeAdmin(app)
 
-app.listen(port, () => {
+app.get("*", (req, res) => {
+  res.render("client/pages/errors/404", {
+      pageTitle: "404 Not Found",
+  });
+});
+
+server.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
