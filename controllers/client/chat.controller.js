@@ -5,6 +5,7 @@ const User = require("../../models/user.model");
  module.exports.index = async (req, res) => {
 
   const userId = res.locals.user.id;
+  const fullName = res.locals.user.fullName;
     
 //   // SocketIO
   _io.once('connection', (socket) => {
@@ -15,7 +16,23 @@ const User = require("../../models/user.model");
         content: content
       })
       await chat.save();
+
+
+      _io.emit("SERVER_RETURN_MESSAGE",{
+        userId : userId,
+        fullName :fullName,
+        content:content
+      })
   })
+
+  //type
+  socket.on("CLIENT_SEND_TYPING", async (type) => {
+      socket.broadcast.emit("SERVER_RETURN_TYPING", {
+        userId : userId,
+        fullName :fullName,
+        type:type
+      })
+})
 });
 // // End SocketIO  
   const chats = await Chat.find({
